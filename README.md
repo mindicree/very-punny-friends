@@ -1,0 +1,1 @@
+A game built for the Global Game Jam 2024. Uses Flask in the backend, uses Tailwind and Alpine on the frontend.
