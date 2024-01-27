@@ -8,3 +8,21 @@
     display: grid;
     position: fixed;
 }
+
+@keyframes vote-animation {
+    from {
+        opacity: 1.0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 0.0;
+        transform: translateY(-40px);
+    }
+}
+
+.vote-count {
+    animation: vote-animation 1s forwards;
+    animation-timing-function: linear;
+    animation-iteration-count: 1;
+    position: absolute;
+}

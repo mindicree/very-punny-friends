@@ -73,6 +73,23 @@
                         </button>
                     </div>
                 </div>
+                <div x-show="gameState.level_countdown <= 0 && !gameState.accepting_answers && gameState.accepting_votes" 
+                    class="flex flex-col gap-2 m-auto relative h-[75vh]">
+                    <div class="flex flex-col gap-2 m-auto">
+                        <h4 class="m-auto w-full text-center text-5xl" x-text="gameState.current_joke"></h4>
+                        <span class="m-auto text-2xl">Make your decisions now!</span>
+                    </div>
+                    <div class="absolute flex w-full bottom-0">
+                        <div x-ref="voteContainer" class="flex w-11/12 m-auto justify-between max-w-screen-sm relative">
+                            <button x-on:click="sendVote(true)" type="button">
+                                <span class="material-symbols-outlined text-3xl" style="font-size: 32px;">sentiment_very_satisfied</span>
+                            </button>
+                            <button x-on:click="sendVote(false)" type="button">
+                                <span class="material-symbols-outlined text-3xl" style="font-size: 32px;">sentiment_very_dissatisfied</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
                 <span class="absolute bottom-0 left-0" x-text="`${playerData.name}`"></span>
                 <span class="absolute bottom-0 right-0" x-text="`Score: ${playerData.score}`"></span>
             </div>

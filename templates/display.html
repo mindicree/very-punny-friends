@@ -47,7 +47,7 @@
                     <h3 class="w-full text-lg text-center">Give Me A Punny Joke For</h3>
                     <h3 class="w-full text-5xl text-center font-bold" x-text="gameState.current_word"></h3>
                 </div>
-                <div x-show="gameState.level_countdown <= 0 && !gameState.accepting_answers && !gameState.accepting_votes" class="flex flex-col gap-2 m-auto">
+                <div x-show="gameState.level_countdown <= 0 && !gameState.accepting_answers && !gameState.accepting_votes && !gameState.showing_results" class="flex flex-col gap-2 m-auto">
                     <h4 class="m-auto w-full text-center text-7xl">New Punny Joke!</h4>
                 </div>
                 <div x-show="gameState.level_countdown <= 0 && !gameState.accepting_answers && gameState.accepting_votes" 
@@ -57,21 +57,59 @@
                         <span class="m-auto text-2xl">Make your decisions now!</span>
                     </div>
                     <div class="absolute flex w-full bottom-0">
-                        <div class="flex w-11/12 m-auto justify-between max-w-screen-sm relative">
+                        <div x-ref="voteContainer" class="flex w-11/12 m-auto justify-between max-w-screen-sm relative">
                             <span class="material-symbols-outlined text-3xl">sentiment_very_satisfied</span>
                             <span x-text="gameState.voting_countdown"></span>
                             <span class="material-symbols-outlined text-3xl">sentiment_very_dissatisfied</span>
                         </div>
                     </div>
                 </div>
-                <div x-show="gameState.level_countdown <= 0 && gameState.accepting_answers && !gameState.accepting_votes" class="flex flex-col gap-2 m-auto">
+                <div x-show="gameState.level_countdown <= 0 && !gameState.accepting_answers && !gameState.accepting_votes && gameState.current_joke && gameState.showing_results" class="flex flex-col gap-2 m-auto">
                     <h3 class="w-full text-lg text-center">The Votes Are In!</h3>
                     <h3 class="w-full text-lg text-center">Results?</h3>
-                    <h3 class="w-full text-5xl text-center font-bold" x-text="gameState.current_word"></h3>
+                    <div class="absolute flex w-full bottom-0 left-0">
+                        <div class="flex w-11/12 m-auto justify-between max-w-[500px]">
+                            <div class="flex flex-col">
+                                <span class="text-green-500 m-auto text-center text-3xl" x-text="resultsYesText"></span>
+                                <span class="material-symbols-outlined text-3xl" style="font-size: 64px;">sentiment_very_satisfied</span>
+                            </div>
+                            <div class="flex flex-col">
+                                <span class="text-red-500 m-auto text-center text-3xl" x-text="resultsNoText"></span>
+                                <span class="material-symbols-outlined text-3xl" style="font-size: 64px;">sentiment_very_dissatisfied</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
         <!-- !!Game Screen!! -->
+        <!-- Result Win -->
+        <div x-show="currentScreen == 'round-win'" class="gameScene">
+            <div class="flex flex-col overflow-hidden w-11/12 max-w-screen-lg h-[90vh] m-auto relative">
+                <h5 class="m-auto w-full text-center text-5xl text-green-500" x-html="gameState.current_joke ? `<b>${gameState['players'][gameState['current_joke_player']]['name']}</b> is a very punny friend!` : ''"></h5>
+                <h5 class="m-auto w-full text-center text-3xl text-green-500" x-text="'+' + gameState['votes_yes'] - gameState['votes_no']"></h5>
+            </div>
+        </div>
+        <!-- !!Result Win!! -->
+        <!-- Result Lose -->
+        <div x-show="currentScreen == 'round-lose'" class="gameScene">
+            <div class="flex flex-col overflow-hidden w-11/12 max-w-screen-lg h-[90vh] m-auto relative">
+                <h5 class="m-auto w-full text-center text-5xl text-red-500 font-bold" x-html="gameState.current_joke ? `<b>${gameState['players'][gameState['current_joke_player']]['name']}</b> is not a very punny friend...` : ''"></h5>
+                <h5 class="m-auto w-full text-center text-3xl text-red-500" x-text="gameState['votes_yes'] - gameState['votes_no']"></h5>
+            </div>
+        </div>
+        <!-- !!Result Lose!! -->
+        <!-- Score Dialog -->
+        <dialog x-ref="scoreDialog" class="rounded bg-white">
+            <div class="p-4 w-full max-w-screen-lg grid md:grid-cols-2 overflow-scroll m-auto">
+                <template x-for="(player, index) in gameState.players_sorted">
+                    <div class="m-auto">
+                        <span x-text="`${index + 1}. ${player.name}`"></span>
+                    </div>
+                </template>
+            </div>
+        </dialog>
+        <!-- !!Score Dialog!! -->
     </div>
 </body>
 </html>
