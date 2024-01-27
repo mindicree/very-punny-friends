@@ -5,13 +5,62 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+    <script src="https://cdn.socket.io/4.7.4/socket.io.min.js" integrity="sha384-Gr6Lu2Ajx28mzwyVR8CFkULdCU7kMlZ9UthllibdOSo6qAiN+yXNHqtgdTvFXMT4" crossorigin="anonymous"></script>
+    <script defer src="{{ url_for('static', filename='js/alpinejs/cdn.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/alpine.js') }}"></script>
 </head>
-<script defer src="{{ url_for('static', filename='js/alpinejs/cdn.min.js') }}"></script>
-<script src="{{ url_for('static', filename='js/alpine.js') }}"></script>
+
 <body>
     <div x-data="gameState">
-        <p x-text="testing"></p>
+        <!-- Loading -->
+        <div x-show="currentScreen == 'loading'" class="gameScene bg-white z-50">
+            <div class="flex flex-col gap-8 m-auto">
+                <div class="m-auto">
+                    <h1 class="m-auto text-3xl text-center">Loading...</h1>
+                </div>
+            </div>
+        </div>
+        <!-- !!Loading!! -->
+        <!-- Home Screen -->
+        <div x-show="currentScreen == 'title'" class="gameScene">
+            <div class="flex flex-col gap-8 m-auto">
+                <div class="m-auto">
+                    <h1 class="m-auto text-3xl text-center">Very Punny Friends</h1>
+                </div>
+                <div class="m-auto">
+                    <button class="w-32 py-2 bg-indigo-800 text-white rounded" x-on:click="currentScreen = 'new-player'">Join</button>
+                </div>
+            </div>
+        </div>
+        <!-- !!Home Screen!! -->
+        <!-- New Player Screen -->
+        <div x-show="currentScreen == 'new-player'" class="gameScene">
+            <div class="flex flex-col gap-8 m-auto">
+                <div class="m-auto">
+                    <h1 class="m-auto text-2xl sm:text-3xl text-center">Enter Your Name, New Friend!</h1>
+                </div>
+                <div class="m-auto flex flex-row gap-2 w-11/12 max-w-screen-sm">
+                    <input x-model="playerEnteredName" type="text" class="p-2 rounded outline-none border-2 border-gray-600 focus:border-indigo-800 w-3/4">
+                    <button x-on:click="createAndJoinLobby()" x-bind:disabled="playerEnteredName == null || playerEnteredName.length <= 3" class="w-1/4 bg-indigo-800 text-white rounded disabled:opacity-25 grid">
+                        <span class="material-symbols-outlined m-auto">arrow_forward</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- !!New Player Screen!! -->
+        <!-- Lobby -->
+        <div x-show="currentScreen == 'lobby'" class="gameScene">
+            <div class="flex flex-col overflow-hidden w-11/12 max-w-screen-lg h-[90vh] m-auto relative">
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 m-auto gap-2">
+                    <template x-for="player in gameState.players">
+                        <span x-text="player.name" class="text-sm m-auto"></span>
+                    </template>
+                </div>
+                <span class="absolute w-full text-center bottom-4">Waiting for more friends...</span>
+            </div>
+        </div>
+        <!-- !!Lobby!! -->
     </div>
 </body>
-
 </html>
