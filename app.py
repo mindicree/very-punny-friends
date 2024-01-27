@@ -22,7 +22,7 @@ socketio = SocketIO(app)
 
 @app.route("/")
 def route_home():
-    return "<h1>Hello World!</h1>"
+    return render_template('index.html')
 
 if __name__ == "__main__":
     socketio.run(app, host=config['FLASK_HOST'], port=config['FLASK_PORT'], debug=config['FLASK_DEBUG'])

@@ -1,0 +1,15 @@
+{
+  "name": "verypunnyfriends",
+  "version": "1.0.0",
+  "description": "A game built for the Global Game Jam 2024. Uses Flask in the backend, uses Tailwind and Alpine on the frontend.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "tailwindcss": "^3.4.1"
+  }
+}
