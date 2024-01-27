@@ -61,7 +61,9 @@
         <!-- Game Screen -->
         <div x-show="currentScreen == 'game-screen'" class="gameScene">
             <div class="flex flex-col overflow-hidden w-11/12 max-w-screen-lg h-[90vh] m-auto relative">
-                <h2>GAME!</h2>
+                <div x-show="gameState.level_countdown > 0" class="flex flex-col m-auto text-center">
+                    Here is comes!
+                </div>
             </div>
         </div>
         <!-- !!Game Screen!! -->

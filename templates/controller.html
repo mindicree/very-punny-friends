@@ -51,7 +51,9 @@
         <!-- Game Screen -->
         <div x-show="currentScreen == 'game-screen'" class="gameScene">
             <div class="flex flex-col overflow-hidden w-11/12 max-w-screen-lg h-[90vh] m-auto relative">
-                <h2>GAME!</h2>
+                <div class="absolute bottom-0 flex flex-row justify-between">
+                    <button class="w-32 py-2 bg-indigo-800 text-white rounded" x-on:click="skipLevel()">Skip</button>
+                </div>
             </div>
         </div>
         <!-- !!Game Screen!! -->

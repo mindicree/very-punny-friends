@@ -87,9 +87,39 @@ def socket_connect():
     sleep(1)
     emit('event_game_start', broadcast=True)
 
+@socketio.on('event_load_next_level')
+def socket_connect():
+    game_state['level_countdown'] = 4
+    # update new stuff here
+    createNewQuery()
+    setAcceptingVotes(False)
+    updateGameState()
+    sleep(1)
+    game_state['level_countdown'] = 3
+    updateGameState()
+    sleep(1)
+    game_state['level_countdown'] = 2
+    updateGameState()
+    sleep(1)
+    game_state['level_countdown'] = 1
+    updateGameState()
+    sleep(1)
+    game_state['level_countdown'] = 0
+    setAcceptingAnswers(True)
+    updateGameState()
+    sleep(1)
 
 def updateGameState():
     emit('event_game_state_update', game_state, broadcast=True)
+
+def createNewQuery():
+    pass
+
+def setAcceptingAnswers(isAccepting):
+    game_state['accepting_answers'] = isAccepting
+
+def setAcceptingVotes(isAccepting):
+    game_state['accepting_votes'] = isAccepting
 
 if __name__ == "__main__":
     socketio.run(app, host=config['FLASK_HOST'], port=config['FLASK_PORT'], debug=config['FLASK_DEBUG'])

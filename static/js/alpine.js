@@ -20,6 +20,7 @@ document.addEventListener('alpine:init', () => {
                 location.reload()
             })
             this.socket.on('event_game_state_update', (json) => {
+                console.log(json)
                 this.gameState = json
             })
             this.socket.on('event_new_player_added_successfully', (json) => {
@@ -48,6 +49,9 @@ document.addEventListener('alpine:init', () => {
         startGame() {
             this.socket.emit('event_start_game')
         },
+        loadNextLevel() {
+            this.socket.emit('event_load_next_level')
+        },
         isController() {
             return window.location.href.includes('controller')
         },
@@ -57,8 +61,5 @@ document.addEventListener('alpine:init', () => {
         isPlayer() {
             return !this.isController() && !this.isDisplay()
         },
-        loadNextLevel() {
-            this.socket.emit('event_load_next_level')
-        }
     }))
 })
