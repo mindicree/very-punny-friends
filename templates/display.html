@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Very Punny Friends</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+    <script src="https://cdn.socket.io/4.7.4/socket.io.min.js" integrity="sha384-Gr6Lu2Ajx28mzwyVR8CFkULdCU7kMlZ9UthllibdOSo6qAiN+yXNHqtgdTvFXMT4" crossorigin="anonymous"></script>
+    <script defer src="{{ url_for('static', filename='js/alpinejs/cdn.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/alpine.js') }}"></script>
+</head>
+
+<body>
+    <div x-data="gameState">
+        <!-- Lobby -->
+        <div x-show="currentScreen == 'title'" class="gameScene">
+            <div class="flex flex-col overflow-hidden w-11/12 max-w-screen-lg h-[90vh] m-auto relative">
+                <div class="absolute w-full flex">
+                    <h1 class="m-auto text-3xl text-center">Very Punny Friends</h1>
+                </div>
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 m-auto gap-2">
+                    <template x-for="player in gameState.players">
+                        <span x-text="player.name" class="text-sm m-auto"></span>
+                    </template>
+                </div>
+                <span class="absolute w-full text-center bottom-0">Waiting for more friends...</span>
+            </div>
+        </div>
+        <!-- !!Lobby!! -->
+        <!-- Game Screen -->
+        <div x-show="currentScreen == 'game-screen'" class="gameScene">
+            <div class="flex flex-col overflow-hidden w-11/12 max-w-screen-lg h-[90vh] m-auto relative">
+                <h2>GAME!</h2>
+            </div>
+        </div>
+        <!-- !!Game Screen!! -->
+    </div>
+</body>
+</html>

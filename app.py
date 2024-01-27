@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, make_response, jsonify, abort
 from flask_socketio import SocketIO, emit
+from time import sleep
 import yaml
 import secrets
 
@@ -25,15 +26,25 @@ socketio = SocketIO(app)
 game_state = {
     'started': False,
     'players': {},
+    'controller': None,
     'accepting_answers': False,
     'accepting_voting': False,
     'current_word': None,
     'current_answer': None,
+    'level_countdown': 3
 }
 
 @app.route("/")
-def route_home():
-    return render_template('index.html')
+def route_player():
+    return render_template('player.html')
+
+@app.route("/controller")
+def route_controller():
+    return render_template('controller.html')
+
+@app.route("/display")
+def route_display():
+    return render_template('display.html')
 
 @socketio.on('connect')
 def socket_connect():
@@ -44,6 +55,9 @@ def socket_disconnect():
     if request.sid in game_state['players']:
         game_state['players'].pop(request.sid)
         updateGameState()
+
+    if request.sid == game_state['controller']:
+        game_state['controller'] = None
 
 @socketio.on('event_create_new_player')
 def socket_connect(json):
@@ -56,6 +70,22 @@ def socket_connect(json):
     game_state['players'][request.sid] = new_player
     updateGameState()
     emit('event_new_player_added_successfully', new_player, to=request.sid)
+
+@socketio.on('event_control_game')
+def socket_connect():
+    game_state['controller'] = request.sid
+    print(request.sid)
+    updateGameState()
+    sleep(1)
+    emit('event_controller_set_successfully', to=request.sid)
+
+@socketio.on('event_start_game')
+def socket_connect():
+    game_state['started'] = True
+    print(request.sid)
+    updateGameState()
+    sleep(1)
+    emit('event_game_start', broadcast=True)
 
 
 def updateGameState():

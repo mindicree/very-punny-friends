@@ -26,14 +26,39 @@ document.addEventListener('alpine:init', () => {
                 this.playerData = json
                 this.currentScreen = 'lobby'
             })
+            this.socket.on('event_controller_set_successfully', (json) => {
+                this.currentScreen = this.gameState.started ? 'game-sreen' : 'lobby'
+            })
+            this.socket.on('event_game_start', (json) => {
+                this.currentScreen = 'game-screen'
+                this.loadNextLevel()
+            })
         },
-
         createAndJoinLobby() {
             this.currentScreen = 'loading'
             this.socket.emit('event_create_new_player', {
                 name: this.playerEnteredName
             })
             this.nameSent = true
+        },
+        controlGame() {
+            this.currentScreen = 'loading'
+            this.socket.emit('event_control_game')
+        },
+        startGame() {
+            this.socket.emit('event_start_game')
+        },
+        isController() {
+            return window.location.href.includes('controller')
+        },
+        isDisplay() {
+            return window.location.href.includes('display')
+        },
+        isPlayer() {
+            return !this.isController() && !this.isDisplay()
+        },
+        loadNextLevel() {
+            this.socket.emit('event_load_next_level')
         }
     }))
 })

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Very Punny Friends</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
     <script src="https://cdn.socket.io/4.7.4/socket.io.min.js" integrity="sha384-Gr6Lu2Ajx28mzwyVR8CFkULdCU7kMlZ9UthllibdOSo6qAiN+yXNHqtgdTvFXMT4" crossorigin="anonymous"></script>
@@ -29,26 +29,11 @@
                     <h1 class="m-auto text-3xl text-center">Very Punny Friends</h1>
                 </div>
                 <div class="m-auto">
-                    <button class="w-32 py-2 bg-indigo-800 text-white rounded" x-on:click="currentScreen = 'new-player'">Join</button>
+                    <button class="w-32 py-2 bg-indigo-800 text-white rounded" x-on:click="controlGame()">Control</button>
                 </div>
             </div>
         </div>
         <!-- !!Home Screen!! -->
-        <!-- New Player Screen -->
-        <div x-show="currentScreen == 'new-player'" class="gameScene">
-            <div class="flex flex-col gap-8 m-auto">
-                <div class="m-auto">
-                    <h1 class="m-auto text-2xl sm:text-3xl text-center">Enter Your Name, New Friend!</h1>
-                </div>
-                <div class="m-auto flex flex-row gap-2 w-11/12 max-w-screen-sm">
-                    <input x-model="playerEnteredName" type="text" class="p-2 rounded outline-none border-2 border-gray-600 focus:border-indigo-800 w-3/4">
-                    <button x-on:click="createAndJoinLobby()" x-bind:disabled="playerEnteredName == null || playerEnteredName.length <= 3" class="w-1/4 bg-indigo-800 text-white rounded disabled:opacity-25 grid">
-                        <span class="material-symbols-outlined m-auto">arrow_forward</span>
-                    </button>
-                </div>
-            </div>
-        </div>
-        <!-- !!New Player Screen!! -->
         <!-- Lobby -->
         <div x-show="currentScreen == 'lobby'" class="gameScene">
             <div class="flex flex-col overflow-hidden w-11/12 max-w-screen-lg h-[90vh] m-auto relative">
@@ -57,10 +42,19 @@
                         <span x-text="player.name" class="text-sm m-auto"></span>
                     </template>
                 </div>
-                <span class="absolute w-full text-center bottom-4">Waiting for more friends...</span>
+                <div class="m-auto">
+                    <button class="w-32 py-2 bg-indigo-800 text-white rounded" x-on:click="startGame()">Start</button>
+                </div>
             </div>
         </div>
         <!-- !!Lobby!! -->
+        <!-- Game Screen -->
+        <div x-show="currentScreen == 'game-screen'" class="gameScene">
+            <div class="flex flex-col overflow-hidden w-11/12 max-w-screen-lg h-[90vh] m-auto relative">
+                <h2>GAME!</h2>
+            </div>
+        </div>
+        <!-- !!Game Screen!! -->
     </div>
 </body>
 </html>
