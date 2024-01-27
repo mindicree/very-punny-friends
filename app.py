@@ -3,6 +3,7 @@ from flask_socketio import SocketIO, emit
 from time import sleep
 import yaml
 import secrets
+import random
 
 # configuration load
 try:
@@ -22,17 +23,33 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = config['FLASK_SECRET']
 socketio = SocketIO(app)
 
+def initializeGameState():
+    return {
+        'started': False,
+        'players': {},
+        'controller': None,
+        'accepting_answers': False,
+        'accepting_votes': False,
+        'votes_yes': 0,
+        'votes_no': 0,
+        'current_word': None,
+        'current_joke': None,
+        'level_countdown': 4,
+        'voting_countdown': 15,
+    }
+
 # game data
-game_state = {
-    'started': False,
-    'players': {},
-    'controller': None,
-    'accepting_answers': False,
-    'accepting_voting': False,
-    'current_word': None,
-    'current_answer': None,
-    'level_countdown': 3
-}
+game_state = initializeGameState()
+
+# words
+words = []
+try:
+    with open('words.txt', 'r') as file:
+        for line in file:
+            words.append(line.strip())
+except Exception as e:
+    print('Could not load words.txt file.')
+    exit()
 
 @app.route("/")
 def route_player():
@@ -66,7 +83,6 @@ def socket_connect(json):
         'name': json['name'],
         'score': 0,
     }
-    print(request.sid)
     game_state['players'][request.sid] = new_player
     updateGameState()
     emit('event_new_player_added_successfully', new_player, to=request.sid)
@@ -74,7 +90,6 @@ def socket_connect(json):
 @socketio.on('event_control_game')
 def socket_connect():
     game_state['controller'] = request.sid
-    print(request.sid)
     updateGameState()
     sleep(1)
     emit('event_controller_set_successfully', to=request.sid)
@@ -82,16 +97,19 @@ def socket_connect():
 @socketio.on('event_start_game')
 def socket_connect():
     game_state['started'] = True
-    print(request.sid)
     updateGameState()
     sleep(1)
     emit('event_game_start', broadcast=True)
+
+@socketio.on('event_prompt_game_state')
+def socket_connect():
+    updateGameState()
 
 @socketio.on('event_load_next_level')
 def socket_connect():
     game_state['level_countdown'] = 4
     # update new stuff here
-    createNewQuery()
+    getNewWord()
     setAcceptingVotes(False)
     updateGameState()
     sleep(1)
@@ -109,17 +127,46 @@ def socket_connect():
     updateGameState()
     sleep(1)
 
+@socketio.on('event_joke_submission')
+def socket_connect(json):
+    if not game_state['accepting_answers']:
+        return
+    setAcceptingAnswers(False)
+    updateGameState()
+    sleep(3)
+    setJoke(json['joke'])
+    setAcceptingVotes(True)
+    updateGameState()
+    beginVotingCountDown()
+
+@socketio.on('event_restart_game')
+def socket_connect():
+    game_state = initializeGameState()
+    updateGameState()
+    emit('event_restarting', broadcast=True)
+
 def updateGameState():
     emit('event_game_state_update', game_state, broadcast=True)
 
-def createNewQuery():
-    pass
+def getNewWord():
+    game_state['current_word'] = random.choice(words)
 
 def setAcceptingAnswers(isAccepting):
     game_state['accepting_answers'] = isAccepting
 
 def setAcceptingVotes(isAccepting):
     game_state['accepting_votes'] = isAccepting
+
+def setJoke(joke):
+    game_state['current_joke'] = joke
+
+def beginVotingCountDown():
+    game_state['voting_countdown'] = 16
+    while game_state['voting_countdown'] > 0:
+        game_state['voting_countdown'] -= 1
+        updateGameState()
+        sleep(1)
+    emit('event_voting_stop', broadcast=True)
 
 if __name__ == "__main__":
     socketio.run(app, host=config['FLASK_HOST'], port=config['FLASK_PORT'], debug=config['FLASK_DEBUG'])

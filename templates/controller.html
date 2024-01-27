@@ -43,7 +43,7 @@
                     </template>
                 </div>
                 <div class="m-auto">
-                    <button class="w-32 py-2 bg-indigo-800 text-white rounded" x-on:click="startGame()">Start</button>
+                    <button class="w-32 py-2 bg-indigo-800 text-white rounded disabled:opacity-25" x-on:click="startGame()" x-bind:disabled="Object.keys(gameState.players).length < 2">Start</button>
                 </div>
             </div>
         </div>
@@ -51,8 +51,10 @@
         <!-- Game Screen -->
         <div x-show="currentScreen == 'game-screen'" class="gameScene">
             <div class="flex flex-col overflow-hidden w-11/12 max-w-screen-lg h-[90vh] m-auto relative">
-                <div class="absolute bottom-0 flex flex-row justify-between">
-                    <button class="w-32 py-2 bg-indigo-800 text-white rounded" x-on:click="skipLevel()">Skip</button>
+                <div class="absolute w-11/12 max-w-screen-sm mx-auto bottom-0 right-0 flex flex-row justify-center">
+                    <button class="w-32 py-2 bg-indigo-800 text-white rounded m-auto" x-on:click="promptSkipLevel()">Skip</button>
+                    <button class="w-32 py-2 bg-indigo-800 text-white rounded m-auto" x-on:click="promptShowScores()">Scores</button>
+                    <button class="w-32 py-2 bg-indigo-800 text-white rounded m-auto" x-on:click="promptRestartGame()">Restart</button>
                 </div>
             </div>
         </div>

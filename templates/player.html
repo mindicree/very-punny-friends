@@ -41,8 +41,8 @@
                     <h1 class="m-auto text-2xl sm:text-3xl text-center">Enter Your Name, New Friend!</h1>
                 </div>
                 <div class="m-auto flex flex-row gap-2 w-11/12 max-w-screen-sm">
-                    <input x-model="playerEnteredName" type="text" class="p-2 rounded outline-none border-2 border-gray-600 focus:border-indigo-800 w-3/4">
-                    <button x-on:click="createAndJoinLobby()" x-bind:disabled="playerEnteredName == null || playerEnteredName.length <= 3" class="w-1/4 bg-indigo-800 text-white rounded disabled:opacity-25 grid">
+                    <input x-on:keyup.enter="$refs.buttonNameSubmit.click()" x-model="playerEnteredName" type="text" class="p-2 rounded outline-none border-2 border-gray-600 focus:border-indigo-800 w-3/4">
+                    <button x-ref="buttonNameSubmit" x-on:click="createAndJoinLobby()" x-bind:disabled="playerEnteredName == null || playerEnteredName.length <= 3" class="w-1/4 bg-indigo-800 text-white rounded disabled:opacity-25 grid">
                         <span class="material-symbols-outlined m-auto">arrow_forward</span>
                     </button>
                 </div>
@@ -64,6 +64,17 @@
                 <div x-show="gameState.level_countdown > 0" class="flex flex-col m-auto text-center">
                     Here is comes!
                 </div>
+                <div x-show="gameState.level_countdown <= 0 && gameState.accepting_answers" class="m-auto flex flex-col gap-2">
+                    <h3 class="w-full text-lg text-center" x-text="gameState.current_word"></h3>
+                    <div class="m-auto flex flex-row gap-2 w-11/12 max-w-screen-sm">
+                        <input x-on:keyup.enter="$refs.buttonJokeSubmit.click()" x-model="jokeSubmission" type="text" class="p-2 rounded outline-none border-2 border-gray-600 focus:border-indigo-800 w-3/4">
+                        <button x-ref="buttonJokeSubmit" x-on:click="submitJoke()" x-bind:disabled="jokeSubmission == null || jokeSubmission.length <= 3" class="w-1/4 bg-indigo-800 text-white rounded disabled:opacity-25 grid">
+                            <span class="material-symbols-outlined m-auto">arrow_forward</span>
+                        </button>
+                    </div>
+                </div>
+                <span class="absolute bottom-0 left-0" x-text="`${playerData.name}`"></span>
+                <span class="absolute bottom-0 right-0" x-text="`Score: ${playerData.score}`"></span>
             </div>
         </div>
         <!-- !!Game Screen!! -->
