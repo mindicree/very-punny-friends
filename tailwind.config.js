@@ -9,7 +9,11 @@ module.exports = {
     'text-red-500',
   ],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        pressStart: ['"PressStart2P"', "sans-serif"]
+      }
+    },
   },
   plugins: [],
 }

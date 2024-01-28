@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Very Punny Friends</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+    <script src="https://cdn.socket.io/4.7.4/socket.io.min.js" integrity="sha384-Gr6Lu2Ajx28mzwyVR8CFkULdCU7kMlZ9UthllibdOSo6qAiN+yXNHqtgdTvFXMT4" crossorigin="anonymous"></script>
+    <!-- <script defer src="{{ url_for('static', filename='js/alpinejs/cdn.min.js') }}"></script> -->
+    <!-- <script src="{{ url_for('static', filename='js/alpine.js') }}"></script> -->
+</head>
+
+<body>
+    <div x-data="gameState" class="font-pressStart bg-pink-300 w-full h-screen text-white">
+        <!-- Loading -->
+        <div x-show="currentScreen == 'loading'" class="gameScene">
+            <div class="flex flex-col gap-8 m-auto">
+                <div class="m-auto">
+                    <h1 class="m-auto text-3xl text-center">Sorry, friend. We started without you.</h1>
+                </div>
+            </div>
+        </div>
+        <!-- !!Loading!! -->
+    </div>
+</body>
+</html>

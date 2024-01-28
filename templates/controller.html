@@ -12,9 +12,9 @@
 </head>
 
 <body>
-    <div x-data="gameState">
+    <div x-data="gameState" class="font-pressStart bg-pink-300 w-full h-screen text-white">
         <!-- Loading -->
-        <div x-show="currentScreen == 'loading'" class="gameScene bg-white z-50">
+        <div x-show="currentScreen == 'loading'" class="gameScene">
             <div class="flex flex-col gap-8 m-auto">
                 <div class="m-auto">
                     <h1 class="m-auto text-3xl text-center">Loading...</h1>
@@ -26,7 +26,7 @@
         <div x-show="currentScreen == 'title'" class="gameScene">
             <div class="flex flex-col gap-8 m-auto">
                 <div class="m-auto">
-                    <h1 class="m-auto text-3xl text-center">Very Punny Friends</h1>
+                    <h1 class="m-auto text-3xl text-center">Very Punny<br>Friends</h1>
                 </div>
                 <div class="m-auto">
                     <button class="w-32 py-2 bg-indigo-800 text-white rounded" x-on:click="controlGame()">Control</button>
@@ -49,7 +49,7 @@
         </div>
         <!-- !!Lobby!! -->
         <!-- Game Screen -->
-        <div x-show="currentScreen == 'game-screen'" class="gameScene">
+        <div x-show="window.location.href.includes('controller') && gameState.started" class="gameScene">
             <div class="flex flex-col overflow-hidden w-11/12 max-w-screen-lg h-[90vh] m-auto relative">
                 <div class="absolute w-11/12 max-w-screen-sm mx-auto bottom-0 right-0 flex flex-row justify-center">
                     <button class="w-32 py-2 bg-indigo-800 text-white rounded m-auto" x-on:click="promptSkipLevel()">Skip</button>

@@ -12,12 +12,15 @@
 </head>
 
 <body>
-    <div x-data="gameState">
+    <div class="hidden">
+        <img src="/static/img/background.jpg">
+    </div>
+    <div x-data="gameState" class="font-pressStart text-white scrolling-background">
         <!-- Loading -->
-        <div x-show="currentScreen == 'loading'" class="gameScene bg-white z-50">
+        <div x-show="currentScreen == 'loading'" class="gameScene bg-pink-300 z-50">
             <div class="flex flex-col gap-8 m-auto">
                 <div class="m-auto">
-                    <h1 class="m-auto text-3xl text-center">Loading...</h1>
+                    <h1 class="m-auto text-3xl text-center w-full">Loading...</h1>
                 </div>
             </div>
         </div>
@@ -26,14 +29,14 @@
         <div x-show="currentScreen == 'title'" class="gameScene">
             <div class="flex flex-col overflow-hidden w-11/12 max-w-screen-lg h-[90vh] m-auto relative">
                 <div class="absolute w-full flex">
-                    <h1 class="m-auto text-3xl text-center">Very Punny Friends</h1>
+                    <h1 class="m-auto text-[32px]/[64px] 2xl:text-[64px]/[96px] text-center">Very Punny<br>Friends</h1>
                 </div>
-                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 m-auto gap-2">
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 m-auto gap-2 w-11/12 max-w-screen-md bg-white h-[50vh] p-4 text-black">
                     <template x-for="player in gameState.players">
-                        <span x-text="player.name" class="text-sm m-auto"></span>
+                        <span x-text="player.name" class="text-[16px] m-auto text-center"></span>
                     </template>
                 </div>
-                <span class="absolute w-full text-center bottom-0">Waiting for more friends...</span>
+                <h6 class="absolute w-full text-center text-[16px] bottom-0">Waiting for more friends...</h6>
             </div>
         </div>
         <!-- !!Lobby!! -->
@@ -41,41 +44,69 @@
         <div x-show="currentScreen == 'game-screen'" class="gameScene">
             <div class="flex flex-col overflow-hidden w-11/12 max-w-screen-lg h-[90vh] m-auto relative">
                 <div x-show="gameState.level_countdown > 0 && !gameState.accepting_answers" class="flex flex-col m-auto text-center">
-                    <h3 class="text-3xl m-auto" x-text="gameState.level_countdown == 4 ? 'Ready?' : gameState.level_countdown"></h3>
+                    <h3 class="text-[128px] m-auto" x-text="gameState.level_countdown == 4 ? 'Ready?' : gameState.level_countdown"></h3>
                 </div>
-                <div x-show="gameState.level_countdown <= 0 && gameState.accepting_answers && !gameState.accepting_votes" class="flex flex-col gap-2 m-auto">
-                    <h3 class="w-full text-lg text-center">Give Me A Punny Joke For</h3>
-                    <h3 class="w-full text-5xl text-center font-bold" x-text="gameState.current_word"></h3>
+                <div x-show="gameState.level_countdown <= 0 && gameState.accepting_answers && !gameState.accepting_votes" class="flex flex-col gap-2 m-auto bg-white p-8 text-black" style="filter: drop-shadow(4px 4px 0x #444)">
+                    <span class="w-full text-[16px] text-center">Give Me A Punny Joke For</span>
+                    <span class="w-full text-[64px] text-center font-bold text-pink-400" x-text="gameState.current_word != null ? gameState.current_word.toUpperCase() : ''"></span>
                 </div>
                 <div x-show="gameState.level_countdown <= 0 && !gameState.accepting_answers && !gameState.accepting_votes && !gameState.showing_results" class="flex flex-col gap-2 m-auto">
-                    <h4 class="m-auto w-full text-center text-7xl">New Punny Joke!</h4>
+                    <h4 class="m-auto w-full text-center text-[64px]/[96px]">New Punny Joke!</h4>
                 </div>
                 <div x-show="gameState.level_countdown <= 0 && !gameState.accepting_answers && gameState.accepting_votes" 
-                    class="flex flex-col gap-2 m-auto relative h-[50vh]">
+                    class="flex flex-col gap-2 m-auto relative h-[75vh]">
                     <div class="flex flex-col gap-2 m-auto">
-                        <h4 class="m-auto w-full text-center text-5xl" x-text="gameState.current_joke"></h4>
-                        <span class="m-auto text-2xl">Make your decisions now!</span>
+                        <h4 class="m-auto w-full text-center text-[32px]/[48px]" x-text="gameState.current_joke"></h4>
+                        <span class="m-auto text-[16px]/[16px] py-8 text-center">Make your decisions now!</span>
                     </div>
-                    <div class="absolute flex w-full bottom-0">
-                        <div x-ref="voteContainer" class="flex w-11/12 m-auto justify-between max-w-screen-sm relative">
-                            <span class="material-symbols-outlined text-3xl">sentiment_very_satisfied</span>
-                            <span x-text="gameState.voting_countdown"></span>
-                            <span class="material-symbols-outlined text-3xl">sentiment_very_dissatisfied</span>
+                    <div class="absolute flex w-full bottom-10 left-0">
+                        <div x-ref="voteContainer" class="flex w-11/12 m-auto justify-between max-w-screen-md">
+                            <div class="flex flex-col">
+                                <div class="text-center w-[100px] aspect-square bg-green-500 p-4 my-auto">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -0.5 16 16" shape-rendering="crispEdges">
+                                        <metadata>Made with Pixels to Svg https://codepen.io/shshaw/pen/XbxvNj</metadata>
+                                        <path stroke="#000000" d="M13 3h1M12 4h1M14 4h1M11 5h1M15 5h1M10 6h1M14 6h1M3 7h1M9 7h1M13 7h1M2 8h1M4 8h1M8 8h1M12 8h1M1 9h1M5 9h1M7 9h1M11 9h1M2 10h1M6 10h1M10 10h1M3 11h1M9 11h1M4 12h1M8 12h1M5 13h1M7 13h1M6 14h1" />
+                                        <path stroke="#ffffff" d="M13 4h1M12 5h3M11 6h3M10 7h3M3 8h1M9 8h3M2 9h3M8 9h3M3 10h3M7 10h3M4 11h5M5 12h3M6 13h1" />
+                                    </svg>
+                                </div>
+                            </div>
+                            <span x-text="gameState.voting_countdown" class="text-[64px] my-auto" style="text-shadow: 4px 4px 0px #444;"></span>
+                            <div class="flex flex-col">
+                                <div class="text-center w-[100px] aspect-square bg-red-500 p-4 my-auto">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -0.5 16 16" shape-rendering="crispEdges">
+                                        <metadata>Made with Pixels to Svg https://codepen.io/shshaw/pen/XbxvNj</metadata>
+                                        <path stroke="#000000" d="M3 1h1M12 1h1M2 2h1M4 2h1M11 2h1M13 2h1M1 3h1M5 3h1M10 3h1M14 3h1M2 4h1M6 4h1M9 4h1M13 4h1M3 5h1M7 5h2M12 5h1M4 6h1M11 6h1M5 7h1M10 7h1M5 8h1M10 8h1M4 9h1M11 9h1M3 10h1M7 10h2M12 10h1M2 11h1M6 11h1M9 11h1M13 11h1M1 12h1M5 12h1M10 12h1M14 12h1M2 13h1M4 13h1M11 13h1M13 13h1M3 14h1M12 14h1" />
+                                        <path stroke="#ffffff" d="M3 2h1M12 2h1M2 3h3M11 3h3M3 4h3M10 4h3M4 5h3M9 5h3M5 6h6M6 7h4M6 8h4M5 9h6M4 10h3M9 10h3M3 11h3M10 11h3M2 12h3M11 12h3M3 13h1M12 13h1" />
+                                    </svg>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div x-show="gameState.level_countdown <= 0 && !gameState.accepting_answers && !gameState.accepting_votes && gameState.current_joke && gameState.showing_results" class="flex flex-col gap-2 m-auto">
-                    <h3 class="w-full text-lg text-center">The Votes Are In!</h3>
-                    <h3 class="w-full text-lg text-center">Results?</h3>
-                    <div class="absolute flex w-full bottom-0 left-0">
-                        <div class="flex w-11/12 m-auto justify-between max-w-[500px]">
+                    <h3 class="w-full text-[32px]/[32px] text-center">The Votes Are In!</h3>
+                    <h3 class="w-full text-[16px]/[16px] text-center py-8">Counting...</h3>
+                    <div class="absolute flex w-full bottom-10 left-0">
+                        <div class="flex w-3/4 m-auto max-w-screen-sm justify-between">
                             <div class="flex flex-col">
-                                <span class="text-green-500 m-auto text-center text-3xl" x-text="resultsYesText"></span>
-                                <span class="material-symbols-outlined text-3xl" style="font-size: 64px;">sentiment_very_satisfied</span>
+                                <span class="text-green-500 my-auto text-center text-[64px]" x-text="resultsYesText" style="text-shadow: 4px 4px 0px #444;"></span>
+                                <div class="text-center w-[100px] aspect-square bg-green-500 p-4 m-auto">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -0.5 16 16" shape-rendering="crispEdges">
+                                        <metadata>Made with Pixels to Svg https://codepen.io/shshaw/pen/XbxvNj</metadata>
+                                        <path stroke="#000000" d="M13 3h1M12 4h1M14 4h1M11 5h1M15 5h1M10 6h1M14 6h1M3 7h1M9 7h1M13 7h1M2 8h1M4 8h1M8 8h1M12 8h1M1 9h1M5 9h1M7 9h1M11 9h1M2 10h1M6 10h1M10 10h1M3 11h1M9 11h1M4 12h1M8 12h1M5 13h1M7 13h1M6 14h1" />
+                                        <path stroke="#ffffff" d="M13 4h1M12 5h3M11 6h3M10 7h3M3 8h1M9 8h3M2 9h3M8 9h3M3 10h3M7 10h3M4 11h5M5 12h3M6 13h1" />
+                                    </svg>
+                                </div>
                             </div>
                             <div class="flex flex-col">
-                                <span class="text-red-500 m-auto text-center text-3xl" x-text="resultsNoText"></span>
-                                <span class="material-symbols-outlined text-3xl" style="font-size: 64px;">sentiment_very_dissatisfied</span>
+                                <span class="text-red-500 my-auto text-center text-[64px]" x-text="resultsNoText" style="text-shadow: 4px 4px 0px #444;"></span>
+                                <div class="text-center w-[100px] aspect-square bg-red-500 p-4 m-auto">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -0.5 16 16" shape-rendering="crispEdges">
+                                        <metadata>Made with Pixels to Svg https://codepen.io/shshaw/pen/XbxvNj</metadata>
+                                        <path stroke="#000000" d="M3 1h1M12 1h1M2 2h1M4 2h1M11 2h1M13 2h1M1 3h1M5 3h1M10 3h1M14 3h1M2 4h1M6 4h1M9 4h1M13 4h1M3 5h1M7 5h2M12 5h1M4 6h1M11 6h1M5 7h1M10 7h1M5 8h1M10 8h1M4 9h1M11 9h1M3 10h1M7 10h2M12 10h1M2 11h1M6 11h1M9 11h1M13 11h1M1 12h1M5 12h1M10 12h1M14 12h1M2 13h1M4 13h1M11 13h1M13 13h1M3 14h1M12 14h1" />
+                                        <path stroke="#ffffff" d="M3 2h1M12 2h1M2 3h3M11 3h3M3 4h3M10 4h3M4 5h3M9 5h3M5 6h6M6 7h4M6 8h4M5 9h6M4 10h3M9 10h3M3 11h3M10 11h3M2 12h3M11 12h3M3 13h1M12 13h1" />
+                                    </svg>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -86,27 +117,40 @@
         <!-- Result Win -->
         <div x-show="currentScreen == 'round-win'" class="gameScene">
             <div class="flex flex-col overflow-hidden w-11/12 max-w-screen-lg h-[90vh] m-auto relative">
-                <h5 class="m-auto w-full text-center text-5xl text-green-500" x-html="gameState.current_joke ? `<b>${gameState['players'][gameState['current_joke_player']]['name']}</b> is a very punny friend!` : ''"></h5>
-                <h5 class="m-auto w-full text-center text-3xl text-green-500" x-text="'+' + gameState['votes_yes'] - gameState['votes_no']"></h5>
+                <h5 class="m-auto w-full text-center text-[64px]/[64px] text-green-500" x-html="gameState.current_joke ? `<b>${gameState['players'][gameState['current_joke_player']]['name']}</b> is a very punny friend!` : ''"></h5>
+                <h5 class="m-auto w-full text-center text-[32px]/[32px] text-green-500" x-text="`+${gameState['votes_yes'] - gameState['votes_no']}`"></h5>
             </div>
         </div>
         <!-- !!Result Win!! -->
         <!-- Result Lose -->
         <div x-show="currentScreen == 'round-lose'" class="gameScene">
             <div class="flex flex-col overflow-hidden w-11/12 max-w-screen-lg h-[90vh] m-auto relative">
-                <h5 class="m-auto w-full text-center text-5xl text-red-500 font-bold" x-html="gameState.current_joke ? `<b>${gameState['players'][gameState['current_joke_player']]['name']}</b> is not a very punny friend...` : ''"></h5>
-                <h5 class="m-auto w-full text-center text-3xl text-red-500" x-text="gameState['votes_yes'] - gameState['votes_no']"></h5>
+                <h5 class="m-auto w-full text-center text-[64px]/[64px] text-red-500 font-bold" x-html="gameState.current_joke ? `<b>${gameState['players'][gameState['current_joke_player']]['name']}</b> is not a very punny friend...` : ''"></h5>
+                <h5 class="m-auto w-full text-center text-[32px]/[32px] text-red-500" x-text="gameState['votes_yes'] - gameState['votes_no']"></h5>
             </div>
         </div>
         <!-- !!Result Lose!! -->
         <!-- Score Dialog -->
-        <dialog x-ref="scoreDialog" class="rounded bg-white">
-            <div class="p-4 w-full max-w-screen-lg grid md:grid-cols-2 overflow-scroll m-auto">
-                <template x-for="(player, index) in gameState.players_sorted">
-                    <div class="m-auto">
-                        <span x-text="`${index + 1}. ${player.name}`"></span>
-                    </div>
-                </template>
+        <dialog x-ref="scoreDialog" class="w-full max-w-screen-md">
+            <div class="flex w-11/12 max-w-screen-lg p-8">
+                <table class="w-full m-auto">
+                    <thead>
+                        <tr>
+                            <th class="text-left py-6">Rank</th>
+                            <th class="text-left">Player</th>
+                            <th class="text-left">Score</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template x-for="(player, index) in gameState.players_sorted">
+                            <tr>
+                                <td class="py-1" x-text="(index + 1) > 10 ? (index + 1) : `0${(index + 1)}`"></td>
+                                <td x-text="player.name"></td>
+                                <td x-text="pad(player.score, 8)"></td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
             </div>
         </dialog>
         <!-- !!Score Dialog!! -->

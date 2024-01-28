@@ -11,7 +11,7 @@ document.addEventListener('alpine:init', () => {
             started: false,
             players: {},
             players_sorted: [],
-            current_word: null,
+            current_word: '',
             current_joke: null,
             current_joke_player: null
         },
@@ -20,12 +20,12 @@ document.addEventListener('alpine:init', () => {
         canVote: true,
         resultsYesText: 0,
         resultsNoText: 0,
+        roundText: null,
 
         init() {
             this.socket = io()
             this.socket.on('connect', () => {
                 this.currentScreen = 'title'
-                console.log('connected!')
                 // if the display accidentally refreshes, come back to the game
                 if (this.isDisplay()) {
                     this.promptGameState()
@@ -33,10 +33,9 @@ document.addEventListener('alpine:init', () => {
             })
             this.socket.on('disconnect', () => {
                 alert('Goodbye friend!')
-                location.reload()
+                window.location.reload(true)
             })
             this.socket.on('event_game_state_update', (json) => {
-                console.log(json)
                 this.gameState = json
                 // also checking for disconnect
                 if (this.gameState.started) {
@@ -83,12 +82,16 @@ document.addEventListener('alpine:init', () => {
                 this.socket.emit('event_counting_complete')
             })
             this.socket.on('event_round_win', async (json) => {
-                this.currentScreen = 'round-win'
                 if (this.playerData.id == json.player.id) {
+                    this.roundText = "You are a very punny friend!<br>Congratulations!"
                     this.playerData = json.player
+                } else {
+                    this.roundText = `<b>${json.player.name}</b> is a very punny friend!`
                 }
+                this.currentScreen = 'round-win'
                 this.resultsYesText = 0
                 this.resultsNoText = 0
+                this.jokeSubmission = null
                 if (this.isDisplay()) {
                     await this.sleep(3000)
                     // Show scores
@@ -99,12 +102,17 @@ document.addEventListener('alpine:init', () => {
                 }
             })
             this.socket.on('event_round_lose', (json) => {
+                if (this.playerData.id == json.player.id) {
+                    this.roundText = "You are not a very punny friend..."
+                    this.playerData = json.player
+                    this.jokeSubmission = null
+                } else {
+                    this.roundText = `<b>${json.player.name}</b> is a very punny friend!`
+                }
                 this.currentScreen = 'round-lose'
+                this.jokeSubmission = null
                 this.resultsYesText = 0
                 this.resultsNoText = 0
-                if (this.playerData.id == json.player.id) {
-                    this.playerData = json.player
-                }
             })
         },
         sleep(ms) {
@@ -128,6 +136,7 @@ document.addEventListener('alpine:init', () => {
 
         },
         loadNextLevel() {
+            this.jokeSubmission = null
             this.socket.emit('event_load_next_level')
         },
         submitJoke() {
@@ -160,10 +169,10 @@ document.addEventListener('alpine:init', () => {
         },
         createVoteAnimation(good) {
             let voteCounter = document.createElement('span')
-            let variance = Math.floor(Math.random() * 5) + 3
+            let variance = Math.floor(Math.random() * 80)
             voteCounter.classList.add(
                 good ? 'text-green-500' : 'text-red-500', 
-                'vote-count', 'absolute', 'font-bold')
+                'vote-count', 'absolute', 'font-bold', 'text-[32px]', '-top-10')
             if (good) {
                 voteCounter.style.left = `${variance}px`
             } else {
@@ -174,6 +183,13 @@ document.addEventListener('alpine:init', () => {
             setTimeout(() => {
                 voteCounter.remove()
             }, 1500)
+        },
+        pad(num, size) {
+            let negative = num < 0
+            num = num.toString().replace('-', '');
+            while (num.length < size - 1) num = "0" + num;
+            num = (negative ? '-' : '0') + num;
+            return num;
         },
         promptGameState() {
             this.socket.emit('event_prompt_game_state')

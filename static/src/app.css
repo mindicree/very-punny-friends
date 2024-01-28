@@ -2,11 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
-.gameScene {
-    width: 100%;
-    height: 100vh;
-    display: grid;
-    position: fixed;
+@font-face {
+    font-family: "PressStart2P";
+    src: url("/static/fonts/PressStart2P.ttf");
 }
 
 @keyframes vote-animation {
@@ -16,8 +14,37 @@
     }
     to {
         opacity: 0.0;
-        transform: translateY(-40px);
+        transform: translateY(-80px);
     }
+}
+
+@keyframes animation-scrolling-background {
+    from {
+        background-position: 0px 0px;
+    }
+    to {
+        background-position: -3840px 0px;
+    }
+}
+
+h1, h2, h3, h4, h5, h6 {
+    text-shadow: 5px 5px #444444;
+}
+
+.gameScene {
+    width: 100%;
+    height: 100vh;
+    display: grid;
+    position: fixed;
+}
+
+.scrolling-background {
+    width: 100%;
+    height: 100vh;
+    background-image: url('/static/img/background.jpg');
+    background-repeat: repeat-x;
+    background-size: cover;
+    animation: animation-scrolling-background 120s steps(2000, end) infinite;
 }
 
 .vote-count {
@@ -25,4 +52,12 @@
     animation-timing-function: linear;
     animation-iteration-count: 1;
     position: absolute;
+}
+
+.input {
+    color: black;
+}
+
+dialog::backdrop {
+    background-color: rgba(0, 0, 0, 0.25);
 }

@@ -12,9 +12,9 @@
 </head>
 
 <body>
-    <div x-data="gameState">
+    <div x-data="gameState" class="font-pressStart text-white scrolling-background">
         <!-- Loading -->
-        <div x-show="currentScreen == 'loading'" class="gameScene bg-white z-50">
+        <div x-show="currentScreen == 'loading'" class="gameScene bg-pink-300 z-50">
             <div class="flex flex-col gap-8 m-auto">
                 <div class="m-auto">
                     <h1 class="m-auto text-3xl text-center">Loading...</h1>
@@ -24,12 +24,12 @@
         <!-- !!Loading!! -->
         <!-- Home Screen -->
         <div x-show="currentScreen == 'title'" class="gameScene">
-            <div class="flex flex-col gap-8 m-auto">
+            <div class="flex flex-col gap-20 m-auto">
                 <div class="m-auto">
-                    <h1 class="m-auto text-3xl text-center">Very Punny Friends</h1>
+                    <h1 class="m-auto text-center text-[32px]/[48px] lg:text-[64px]/[96px]">Very Punny<br>Friends</h1>
                 </div>
                 <div class="m-auto">
-                    <button class="w-32 py-2 bg-indigo-800 text-white rounded" x-on:click="currentScreen = 'new-player'">Join</button>
+                    <button class="w-32 py-2 bg-indigo-800 text-white text-[16px]" x-on:click="currentScreen = 'new-player'; $nextTick(() => { $refs.inputName.focus(); })">Join</button>
                 </div>
             </div>
         </div>
@@ -38,12 +38,12 @@
         <div x-show="currentScreen == 'new-player'" class="gameScene">
             <div class="flex flex-col gap-8 m-auto">
                 <div class="m-auto">
-                    <h1 class="m-auto text-2xl sm:text-3xl text-center">Enter Your Name, New Friend!</h1>
+                    <h1 class="m-auto text-[32px] text-center">What's Your Name, New Friend?</h1>
                 </div>
                 <div class="m-auto flex flex-row gap-2 w-11/12 max-w-screen-sm">
-                    <input x-on:keyup.enter="$refs.buttonNameSubmit.click()" x-model="playerEnteredName" type="text" class="p-2 rounded outline-none border-2 border-gray-600 focus:border-indigo-800 w-3/4">
-                    <button x-ref="buttonNameSubmit" x-on:click="createAndJoinLobby()" x-bind:disabled="playerEnteredName == null || playerEnteredName.length <= 3" class="w-1/4 bg-indigo-800 text-white rounded disabled:opacity-25 grid">
-                        <span class="material-symbols-outlined m-auto">arrow_forward</span>
+                    <input tabindex="0" x-ref="inputName" x-on:keyup.enter="$refs.buttonNameSubmit.click()" x-model="playerEnteredName" type="text" class="p-2  outline-none border-2 border-gray-600 focus:border-indigo-800 w-3/4 text-black">
+                    <button x-ref="buttonNameSubmit" x-on:click="createAndJoinLobby()" x-bind:disabled="playerEnteredName == null || playerEnteredName.length <= 3" class="w-1/4 bg-indigo-800 text-white  disabled:opacity-25 grid">
+                        <span class="m-auto text-center">>></span>
                     </button>
                 </div>
             </div>
@@ -52,8 +52,8 @@
         <!-- Lobby -->
         <div x-show="currentScreen == 'lobby'" class="gameScene">
             <div class="flex flex-col overflow-hidden w-11/12 max-w-screen-lg h-[90vh] m-auto relative">
-                <div class="grid m-auto max-w-screen-sm">
-                    <p class="text-center m-auto">Thanks for coming, my punny friend!<br>Let's wait for even more friends!</p>
+                <div class="grid m-auto w-11/12 max-w-screen-lg">
+                    <h6 class="text-center m-auto text-[16px] md:text-[32px]">Thanks for coming, my new punny friend!<br>Let's wait for even more friends!</h6>
                 </div>
             </div>
         </div>
@@ -64,37 +64,68 @@
                 <div x-show="gameState.level_countdown > 0" class="flex flex-col m-auto text-center">
                     Here is comes!
                 </div>
-                <div x-show="gameState.level_countdown <= 0 && gameState.accepting_answers" class="m-auto flex flex-col gap-2">
-                    <h3 class="w-full text-lg text-center" x-text="gameState.current_word"></h3>
+                <div x-show="gameState.level_countdown <= 0 && gameState.accepting_answers" class="m-auto flex flex-col gap-2 bg-white p-8 text-black">
+                    <span class="w-full text-lg text-center" x-html="gameState.current_word ? `Give Me A Punny Joke For <span class='text-pink-400'>${gameState.current_word.toUpperCase()}</span>` : ''"></span>
                     <div class="m-auto flex flex-row gap-2 w-11/12 max-w-screen-sm">
-                        <input x-on:keyup.enter="$refs.buttonJokeSubmit.click()" x-model="jokeSubmission" type="text" class="p-2 rounded outline-none border-2 border-gray-600 focus:border-indigo-800 w-3/4">
-                        <button x-ref="buttonJokeSubmit" x-on:click="submitJoke()" x-bind:disabled="jokeSubmission == null || jokeSubmission.length <= 3" class="w-1/4 bg-indigo-800 text-white rounded disabled:opacity-25 grid">
-                            <span class="material-symbols-outlined m-auto">arrow_forward</span>
+                        <input x-on:keyup.enter="$refs.buttonJokeSubmit.click()" x-model="jokeSubmission" type="text" class="p-2 outline-none border-2 border-gray-600 focus:border-indigo-800 w-3/4">
+                        <button x-ref="buttonJokeSubmit" x-on:click="submitJoke()" x-bind:disabled="jokeSubmission == null || jokeSubmission.length <= 3" class="w-1/4 bg-indigo-800 text-white  disabled:opacity-25 grid">
+                            <span class="m-auto text-center">>></span>
                         </button>
                     </div>
+                </div>
+                <div x-show="gameState.level_countdown <= 0 && !gameState.accepting_answers && !gameState.accepting_votes && !gameState.showing_results" class="flex flex-col gap-2 m-auto">
+                    <h4 class="m-auto w-full text-center text-[64px]/[96px]">New Punny Joke!</h4>
                 </div>
                 <div x-show="gameState.level_countdown <= 0 && !gameState.accepting_answers && gameState.accepting_votes" 
                     class="flex flex-col gap-2 m-auto relative h-[75vh]">
                     <div class="flex flex-col gap-2 m-auto">
-                        <h4 class="m-auto w-full text-center text-5xl" x-text="gameState.current_joke"></h4>
-                        <span class="m-auto text-2xl">Make your decisions now!</span>
+                        <h4 class="m-auto w-full text-center text-[32px]/[48px]" x-text="gameState.current_joke"></h4>
+                        <span class="m-auto text-[16px]/[16px] py-8 text-center">Make your decisions now!</span>
                     </div>
-                    <div class="absolute flex w-full bottom-0">
-                        <div x-ref="voteContainer" class="flex w-11/12 m-auto justify-between max-w-screen-sm relative">
-                            <button x-on:click="sendVote(true)" type="button">
-                                <span class="material-symbols-outlined text-3xl" style="font-size: 32px;">sentiment_very_satisfied</span>
+                    <div class="absolute flex w-full bottom-10">
+                        <div x-ref="voteContainer" class="flex w-3/4 m-auto justify-between max-w-screen-sm relative">
+                            <button x-on:click="sendVote(true)" type="button" class="text-center w-[50px] aspect-square bg-green-500 p-4">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -0.5 16 16" shape-rendering="crispEdges">
+                                    <metadata>Made with Pixels to Svg https://codepen.io/shshaw/pen/XbxvNj</metadata>
+                                    <path stroke="#000000" d="M13 3h1M12 4h1M14 4h1M11 5h1M15 5h1M10 6h1M14 6h1M3 7h1M9 7h1M13 7h1M2 8h1M4 8h1M8 8h1M12 8h1M1 9h1M5 9h1M7 9h1M11 9h1M2 10h1M6 10h1M10 10h1M3 11h1M9 11h1M4 12h1M8 12h1M5 13h1M7 13h1M6 14h1" />
+                                    <path stroke="#ffffff" d="M13 4h1M12 5h3M11 6h3M10 7h3M3 8h1M9 8h3M2 9h3M8 9h3M3 10h3M7 10h3M4 11h5M5 12h3M6 13h1" />
+                                </svg>
                             </button>
-                            <button x-on:click="sendVote(false)" type="button">
-                                <span class="material-symbols-outlined text-3xl" style="font-size: 32px;">sentiment_very_dissatisfied</span>
+                            <button x-on:click="sendVote(false)" type="button" class="text-center w-[50px] aspect-square bg-red-500 p-4">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -0.5 16 16" shape-rendering="crispEdges">
+                                    <metadata>Made with Pixels to Svg https://codepen.io/shshaw/pen/XbxvNj</metadata>
+                                    <path stroke="#000000" d="M3 1h1M12 1h1M2 2h1M4 2h1M11 2h1M13 2h1M1 3h1M5 3h1M10 3h1M14 3h1M2 4h1M6 4h1M9 4h1M13 4h1M3 5h1M7 5h2M12 5h1M4 6h1M11 6h1M5 7h1M10 7h1M5 8h1M10 8h1M4 9h1M11 9h1M3 10h1M7 10h2M12 10h1M2 11h1M6 11h1M9 11h1M13 11h1M1 12h1M5 12h1M10 12h1M14 12h1M2 13h1M4 13h1M11 13h1M13 13h1M3 14h1M12 14h1" />
+                                    <path stroke="#ffffff" d="M3 2h1M12 2h1M2 3h3M11 3h3M3 4h3M10 4h3M4 5h3M9 5h3M5 6h6M6 7h4M6 8h4M5 9h6M4 10h3M9 10h3M3 11h3M10 11h3M2 12h3M11 12h3M3 13h1M12 13h1" />
+                                </svg>
                             </button>
                         </div>
                     </div>
                 </div>
-                <span class="absolute bottom-0 left-0" x-text="`${playerData.name}`"></span>
-                <span class="absolute bottom-0 right-0" x-text="`Score: ${playerData.score}`"></span>
+                <div x-show="gameState.level_countdown <= 0 && !gameState.accepting_answers && !gameState.accepting_votes && gameState.current_joke && gameState.showing_results" class="flex flex-col gap-2 m-auto">
+                    <h3 class="w-full text-[32px]/[32px] text-center">The Votes Are In!</h3>
+                    <h3 class="w-full text-[16px]/[16px] text-center py-8">Counting...</h3>
+                </div>
+                <span class="absolute top-0 left-0 text-[16px] md:text-[32px]" x-text="`${playerData.name}`" style="text-shadow: 4px 4px 0px #333;"></span>
+                <span class="absolute top-0 right-0 text-[16px] md:text-[32px]" x-text="`Score: ${playerData.score}`" style="text-shadow: 4px 4px 0px #333;"></span>
             </div>
         </div>
         <!-- !!Game Screen!! -->
+        <!-- Result Win -->
+        <div x-show="currentScreen == 'round-win'" class="gameScene">
+            <div class="flex flex-col overflow-hidden w-11/12 max-w-screen-lg h-[90vh] m-auto relative">
+                <h5 class="m-auto w-full text-center text-[32px]/[64px] lg:text-[64px]/[96px] text-green-500" x-html="roundText"></h5>
+                <h5 class="m-auto w-full text-center text-[32px]/[64px] lg:text-[64px]/[96px] text-green-500" x-text="`+${gameState['votes_yes'] - gameState['votes_no']}`"></h5>
+            </div>
+        </div>
+        <!-- !!Result Win!! -->
+        <!-- Result Lose -->
+        <div x-show="currentScreen == 'round-lose'" class="gameScene">
+            <div class="flex flex-col overflow-hidden w-11/12 max-w-screen-lg h-[90vh] m-auto relative">
+                <h5 class="m-auto w-full text-center text-[32px]/[64px] lg:text-[64px]/[96px] text-red-500 font-bold" x-html="roundText"></h5>
+                <h5 class="m-auto w-full text-center text-[32px]/[64px] lg:text-[64px]/[96px] text-red-500" x-text="gameState['votes_yes'] - gameState['votes_no']"></h5>
+            </div>
+        </div>
+        <!-- !!Result Lose!! -->
     </div>
 </body>
 </html>

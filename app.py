@@ -1,5 +1,6 @@
-from flask import Flask, render_template, request, make_response, jsonify, abort
+from flask import Flask, render_template, request, make_response, jsonify, abort, redirect
 from flask_socketio import SocketIO, emit
+from flask_htpasswd import HtPasswdAuth
 from time import sleep
 import yaml
 import secrets
@@ -20,8 +21,10 @@ except Exception as e:
 
 # app configuring
 app = Flask(__name__)
+app.config['FLASK_HTPASSWD_PATH'] = './.htpasswd'
 app.config['SECRET_KEY'] = config['FLASK_SECRET']
 socketio = SocketIO(app)
+htpasswd = HtPasswdAuth(app)
 
 def initializeGameState():
     return {
@@ -56,10 +59,13 @@ except Exception as e:
 
 @app.route("/")
 def route_player():
+    if game_state['started']:
+        return render_template('closed.html')
     return render_template('player.html')
 
 @app.route("/controller")
-def route_controller():
+@htpasswd.required
+def route_controller(user):
     return render_template('controller.html')
 
 @app.route("/display")
@@ -68,7 +74,7 @@ def route_display():
 
 @socketio.on('connect')
 def socket_connect():
-    print(f'i got a connection from {request.sid}!')
+    pass
 
 @socketio.on('disconnect')
 def socket_disconnect():
@@ -239,7 +245,7 @@ def resetRound():
 
 def sortPlayers():
     playersSorted = sorted([player for player in game_state['players'].values()], key=lambda x: x['score'], reverse=True)
-    game_state['players_sorted'] = playersSorted
+    game_state['players_sorted'] = playersSorted[0:10]
 
 if __name__ == "__main__":
     socketio.run(app, host=config['FLASK_HOST'], port=config['FLASK_PORT'], debug=config['FLASK_DEBUG'])
