@@ -138,7 +138,7 @@
                         <tr>
                             <th class="text-left py-6">Rank</th>
                             <th class="text-left">Player</th>
-                            <th class="text-left">Score</th>
+                            <th class="text-right">Score</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -146,7 +146,7 @@
                             <tr class="even:text-gray-700">
                                 <td class="py-1" x-text="(index + 1) > 10 ? (index + 1) : `0${(index + 1)}`"></td>
                                 <td x-text="player.name"></td>
-                                <td x-text="pad(player.score, 8)"></td>
+                                <td x-text="pad(player.score, 8)" class="text-right"></td>
                             </tr>
                         </template>
                     </tbody>

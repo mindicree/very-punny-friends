@@ -59,7 +59,7 @@ except Exception as e:
 
 @app.route("/")
 def route_player():
-    if game_state['started']:
+    if game_state['started'] == True:
         return render_template('closed.html')
     return render_template('player.html')
 
@@ -111,6 +111,7 @@ def event_control_game():
 @socketio.on('event_start_game')
 def event_start_game():
     game_state['started'] = True
+    sortPlayers()
     updateGameState()
     sleep(1)
     emit('event_game_start', broadcast=True)
@@ -118,6 +119,14 @@ def event_start_game():
 @socketio.on('event_prompt_game_state')
 def event_prompt_game_state():
     updateGameState()
+
+@socketio.on('event_prompt_show_scores')
+def event_prompt_show_scores():
+    emit('event_show_scores', broadcast=True)
+
+@socketio.on('event_prompt_hide_scores')
+def event_prompt_show_scores():
+    emit('event_hide_scores', broadcast=True)
 
 @socketio.on('event_load_next_level')
 def event_load_next_level():
@@ -207,6 +216,7 @@ def event_counting_complete():
 
 @socketio.on('event_restart_game')
 def event_restart_game():
+    global game_state
     game_state = initializeGameState()
     updateGameState()
     emit('event_restarting', broadcast=True)

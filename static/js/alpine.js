@@ -39,8 +39,6 @@ document.addEventListener('alpine:init', () => {
             window.addEventListener('mouseover', () => {
                 if (this.canPlayAudio === false) {
                     this.canPlayAudio = true;
-                    console.log('Allowed to play sound')
-                    console.log('Calling playSound from windowEvent')
                     this.playSound('bgmTitle', true, 0.75)
                 }
             })
@@ -60,11 +58,8 @@ document.addEventListener('alpine:init', () => {
                 this.gameState = json.gameState
                 if (json.sound) {
                     json.sound.forEach((element) => {
-                        console.log('Element: ' + JSON.stringify(element))
                         switch(element.action) {
                             case 'play':
-                                console.log('canPlayAudio: ' + this.canPlayAudio)
-                                console.log('calling playSound from event_game_state_update')
                                 this.playSound(element['name'], element['loop'] || false, element['volume'] || 1.0)
                                 break;
                             case 'stop':
@@ -157,6 +152,16 @@ document.addEventListener('alpine:init', () => {
                 this.resultsYesText = 0
                 this.resultsNoText = 0
             })
+            this.socket.on('event_show_scores', (json) => {
+                if (!this.isDisplay())
+                    return
+                this.$refs.scoreDialog.showModal()
+            })
+            this.socket.on('event_hide_scores', (json) => {
+                if (!this.isDisplay())
+                    return
+                this.$refs.scoreDialog.close()
+            })
         },
         sleep(ms) {
             return new Promise(resolve => setTimeout(resolve, ms));
@@ -233,11 +238,6 @@ document.addEventListener('alpine:init', () => {
         playSound(sound, loop=false, volume=1.0) {
             if (!this.isDisplay() || 
                 !this.canPlayAudio) {
-                    console.log('Not playing sound.')
-                    console.log('Arguments:')
-                    console.log(arguments)
-                    console.log('Values')
-                    console.log(`${!this.isDisplay()} ${!this.canPlayAudio}`)
                 return
             }
             if (!this.audioEngine[sound].paused) {
@@ -252,7 +252,6 @@ document.addEventListener('alpine:init', () => {
 
                 }
                 this.audioEngine[sound].play()
-                console.log(`Playing ${sound}`)
             } catch(err) {
                 console.log(err)
             }
@@ -280,7 +279,12 @@ document.addEventListener('alpine:init', () => {
         },
         promptShowScores() {
             if (confirm('Are you sure you want to show the scores?')) {
-                alert('TODO; implement promptShowScores()')
+                this.socket.emit('event_prompt_show_scores')
+            }
+        },
+        promptHideScores() {
+            if (confirm('Are you sure you want to hide the scores?')) {
+                this.socket.emit('event_prompt_hide_scores')
             }
         },
         promptRestartGame() {
