@@ -143,7 +143,7 @@
                     </thead>
                     <tbody>
                         <template x-for="(player, index) in gameState.players_sorted">
-                            <tr>
+                            <tr class="even:text-gray-700">
                                 <td class="py-1" x-text="(index + 1) > 10 ? (index + 1) : `0${(index + 1)}`"></td>
                                 <td x-text="player.name"></td>
                                 <td x-text="pad(player.score, 8)"></td>

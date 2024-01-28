@@ -93,7 +93,12 @@ def event_create_new_player(json):
         'score': 0,
     }
     game_state['players'][request.sid] = new_player
-    updateGameState()
+    updateGameState(sound=[
+        {
+            'action': 'play',
+            'name': 'sfxPlayerEntered'
+        }
+    ])
     emit('event_new_player_added_successfully', new_player, to=request.sid)
 
 @socketio.on('event_control_game')
@@ -119,17 +124,41 @@ def event_load_next_level():
     resetRound()
     sleep(1)
     game_state['level_countdown'] = 3
-    updateGameState()
+    updateGameState(sound=[
+        {
+            'action': 'play',
+            'name': 'sfxGameCountdown',
+            'volume': 0.25,
+        }
+    ])
     sleep(1)
     game_state['level_countdown'] = 2
-    updateGameState()
+    updateGameState(sound=[
+        {
+            'action': 'play',
+            'name': 'sfxGameCountdown',
+            'volume': 0.25,
+        }
+    ])
     sleep(1)
     game_state['level_countdown'] = 1
-    updateGameState()
+    updateGameState(sound=[
+        {
+            'action': 'play',
+            'name': 'sfxGameCountdown',
+            'volume': 0.25,
+        }
+    ])
     sleep(1)
     game_state['level_countdown'] = 0
     setAcceptingAnswers(True)
-    updateGameState()
+    updateGameState(sound=[
+        {
+            'action': 'play',
+            'name': 'bgmJokes',
+            'loop': True,
+        }
+    ])
     sleep(1)
 
 @socketio.on('event_joke_submission')
@@ -138,11 +167,26 @@ def event_joke_submission(json):
         return
     setAcceptingAnswers(False)
     setShowingResults(False)
-    updateGameState()
+    updateGameState(sound=[
+        {
+            'action': 'stop',
+        },
+        {
+            'action': 'play',
+            'name': 'sfxJokeSubmitted',
+            'volume': 0.25,
+        },
+        
+    ])
     sleep(3)
     setJoke(json['joke'], request.sid)
     setAcceptingVotes(True)
-    updateGameState()
+    updateGameState(sound=[
+        {
+            'action': 'play',
+            'name': 'bgmVoting',
+        }
+    ])
     beginVotingCountDown()
 
 @socketio.on('event_vote_submission')
@@ -167,8 +211,12 @@ def event_restart_game():
     updateGameState()
     emit('event_restarting', broadcast=True)
 
-def updateGameState():
-    emit('event_game_state_update', game_state, broadcast=True)
+def updateGameState(sound=None):
+    data = {
+        'gameState': game_state,
+        'sound': sound,
+    }
+    emit('event_game_state_update', data, broadcast=True)
 
 def getNewWord():
     game_state['current_word'] = random.choice(words)
@@ -204,7 +252,13 @@ def beginVotingCountDown():
 def roundWin():
     game_state['players'][game_state['current_joke_player']]['score'] += calculateVoteDifference()
     sortPlayers()
-    updateGameState()
+    updateGameState(sound=[
+        {
+            'action': 'play',
+            'name': 'bgmWin',
+            'volume': 0.5,
+        } 
+    ])
     emit('event_round_win', { 'player': game_state['players'][game_state['current_joke_player']] }, broadcast=True)
     sleep(5)
     emit('event_show_scores')
@@ -214,9 +268,15 @@ def roundWin():
 def roundLose():
     game_state['players'][game_state['current_joke_player']]['score'] += calculateVoteDifference()
     sortPlayers()
-    updateGameState()
+    updateGameState(sound=[
+        {
+            'action': 'play',
+            'name': 'bgmLose',
+            'volume': 0.25,
+        } 
+    ])
     emit('event_round_lose', { 'player': game_state['players'][game_state['current_joke_player']] }, broadcast=True)
-    sleep(5)
+    sleep(3)
     continueRound()
     pass
 
@@ -228,7 +288,13 @@ def continueRound():
     setAcceptingAnswers(True)
     setAcceptingVotes(False)
     clearJokes()
-    updateGameState()
+    updateGameState([
+        {
+            'action': 'play',
+            'name': 'bgmJokes',
+            'loop': True
+        }
+    ])
 
 def clearJokes():
     game_state['current_joke'] = None

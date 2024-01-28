@@ -15,6 +15,19 @@ document.addEventListener('alpine:init', () => {
             current_joke: null,
             current_joke_player: null
         },
+        canPlayAudio: false,
+        audioEngine: {
+            bgmTitle: new Audio('/static/mp3/bgm-title.mp3'),
+            bgmJokes: new Audio('/static/mp3/bgm-jokes.mp3'),
+            bgmVoting: new Audio('/static/mp3/bgm-voting.mp3'),
+            bgmWin: new Audio('/static/mp3/bgm-win.mp3'),
+            bgmLose: new Audio('/static/mp3/bgm-lose.mp3'),
+
+            sfxPlayerEntered: new Audio('/static/mp3/sfx-player-entered.mp3'),
+            sfxGameStarted: new Audio('/static/mp3/sfx-game-started.mp3'),
+            sfxGameCountdown: new Audio('/static/mp3/sfx-game-countdown.mp3'),
+            sfxJokeSubmitted: new Audio('/static/mp3/sfx-joke-submitted.mp3'),
+        },
         nameSent: null,
         jokeSubmission: null,
         canVote: true,
@@ -23,6 +36,14 @@ document.addEventListener('alpine:init', () => {
         roundText: null,
 
         init() {
+            window.addEventListener('mouseover', () => {
+                if (this.canPlayAudio === false) {
+                    this.canPlayAudio = true;
+                    console.log('Allowed to play sound')
+                    console.log('Calling playSound from windowEvent')
+                    this.playSound('bgmTitle', true, 0.75)
+                }
+            })
             this.socket = io()
             this.socket.on('connect', () => {
                 this.currentScreen = 'title'
@@ -36,11 +57,27 @@ document.addEventListener('alpine:init', () => {
                 window.location.reload(true)
             })
             this.socket.on('event_game_state_update', (json) => {
-                this.gameState = json
-                // also checking for disconnect
-                if (this.gameState.started) {
-                    this.currentScreen = 'game-screen'
+                this.gameState = json.gameState
+                if (json.sound) {
+                    json.sound.forEach((element) => {
+                        console.log('Element: ' + JSON.stringify(element))
+                        switch(element.action) {
+                            case 'play':
+                                console.log('canPlayAudio: ' + this.canPlayAudio)
+                                console.log('calling playSound from event_game_state_update')
+                                this.playSound(element['name'], element['loop'] || false, element['volume'] || 1.0)
+                                break;
+                            case 'stop':
+                                this.stopAllSound()
+                                break;
+                            default:
+                                console.log('Invalid sound data: ')
+                                console.log(element)
+                        }
+                    })
                 }
+                if (this.gameState.started)
+                    this.currentScreen = 'game-screen'
             })
             this.socket.on('event_new_player_added_successfully', (json) => {
                 this.playerData = json
@@ -51,6 +88,8 @@ document.addEventListener('alpine:init', () => {
             })
             this.socket.on('event_game_start', (json) => {
                 this.currentScreen = 'game-screen'
+                this.stopAllSound()
+                this.playSound('sfxGameStarted', false, 1.0)
                 this.loadNextLevel()
             })
             this.socket.on('event_restarting', (json) => {
@@ -70,6 +109,7 @@ document.addEventListener('alpine:init', () => {
                 let timeout = 1500 / maximum
 
                 while (this.resultsYesText < this.gameState.votes_yes || this.resultsNoText < this.gameState.votes_no) {
+                    this.playSound('sfxGameCountdown', false, 0.5)
                     if (this.resultsYesText < this.gameState.votes_yes) {
                         this.resultsYesText++;
                     }
@@ -93,11 +133,14 @@ document.addEventListener('alpine:init', () => {
                 this.resultsNoText = 0
                 this.jokeSubmission = null
                 if (this.isDisplay()) {
-                    await this.sleep(3000)
+                    await this.sleep(2000)
                     // Show scores
                     this.$refs.scoreDialog.showModal()
-                    await this.sleep(10000)
+                    await this.sleep(5000)
                     this.$refs.scoreDialog.close()
+                }
+                if (this.isController()) {
+                    await this.sleep(7000)
                     this.loadNextLevel()
                 }
             })
@@ -136,6 +179,9 @@ document.addEventListener('alpine:init', () => {
 
         },
         loadNextLevel() {
+            if (!this.isController()) {
+                return
+            }
             this.jokeSubmission = null
             this.socket.emit('event_load_next_level')
         },
@@ -184,6 +230,39 @@ document.addEventListener('alpine:init', () => {
                 voteCounter.remove()
             }, 1500)
         },
+        playSound(sound, loop=false, volume=1.0) {
+            if (!this.isDisplay() || 
+                !this.canPlayAudio) {
+                    console.log('Not playing sound.')
+                    console.log('Arguments:')
+                    console.log(arguments)
+                    console.log('Values')
+                    console.log(`${!this.isDisplay()} ${!this.canPlayAudio}`)
+                return
+            }
+            if (!this.audioEngine[sound].paused) {
+                this.audioEngine[sound].pause()
+            }
+            try {
+                this.audioEngine[sound].loop = loop
+                this.audioEngine[sound].volume = volume
+                this.audioEngine[sound].currentTime = 0
+                let playing = false;
+                while (!this.audioEngine[sound].paused) {
+
+                }
+                this.audioEngine[sound].play()
+                console.log(`Playing ${sound}`)
+            } catch(err) {
+                console.log(err)
+            }
+        },
+        stopAllSound() {
+            for (sound of Object.values(this.audioEngine)) {
+                sound.pause()
+                sound.currentTime = 0
+            }
+        },
         pad(num, size) {
             let negative = num < 0
             num = num.toString().replace('-', '');
@@ -208,6 +287,6 @@ document.addEventListener('alpine:init', () => {
             if (confirm('Are you sure you want to restart the game?')) {
                 this.socket.emit('event_restart_game')
             }
-        }
+        },
     }))
 })
