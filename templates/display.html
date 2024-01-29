@@ -12,10 +12,12 @@
 </head>
 
 <body>
-    <div class="hidden">
-        <img src="/static/img/background.jpg">
-    </div>
     <div x-data="gameState" class="font-pressStart text-white scrolling-background">
+        <div class="hidden">
+            <img src="/static/img/background.jpg">
+            <img src="/static/img/background2.jpg">
+            <img src="/static/img/background3.jpg">
+        </div>
         <!-- Loading -->
         <div x-show="currentScreen == 'loading'" class="gameScene bg-pink-300 z-50">
             <div class="flex flex-col gap-8 m-auto">

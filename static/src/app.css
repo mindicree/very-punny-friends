@@ -47,6 +47,16 @@ h1, h2, h3, h4, h5, h6 {
     animation: animation-scrolling-background 120s steps(2000, end) infinite;
 }
 
+.background1 {
+    background-image: url('/static/img/background.jpg');
+}
+.background2 {
+    background-image: url('/static/img/background2.jpg');
+}
+.background3 {
+    background-image: url('/static/img/background3.jpg');
+}
+
 .vote-count {
     animation: vote-animation 1s forwards;
     animation-timing-function: linear;

@@ -13,6 +13,11 @@
 
 <body>
     <div x-data="gameState" class="font-pressStart text-white scrolling-background">
+        <div class="hidden">
+            <img src="/static/img/background.jpg">
+            <img src="/static/img/background2.jpg">
+            <img src="/static/img/background3.jpg">
+        </div>
         <!-- Loading -->
         <div x-show="currentScreen == 'loading'" class="gameScene bg-pink-300 z-50">
             <div class="flex flex-col gap-8 m-auto">
@@ -65,13 +70,14 @@
                     Here is comes!
                 </div>
                 <div x-show="gameState.level_countdown <= 0 && gameState.accepting_answers" class="m-auto flex flex-col gap-2 bg-white p-8 text-black">
-                    <span class="w-full text-lg text-center" x-html="gameState.current_word ? `Give Me A Punny Joke For <span class='text-pink-400'>${gameState.current_word.toUpperCase()}</span>` : ''"></span>
+                    <span class="w-full text-[16px] lg:text-[32px]/[32px] text-center" x-html="gameState.current_word ? `Give Me A Punny Joke For <span class='text-pink-400'>${gameState.current_word.toUpperCase()}</span>` : ''"></span>
                     <div class="m-auto flex flex-row gap-2 w-11/12 max-w-screen-sm">
                         <input x-on:keyup.enter="$refs.buttonJokeSubmit.click()" x-model="jokeSubmission" type="text" class="p-2 outline-none border-2 border-gray-600 focus:border-indigo-800 w-3/4">
                         <button x-ref="buttonJokeSubmit" x-on:click="submitJoke()" x-bind:disabled="jokeSubmission == null || jokeSubmission.length <= 3" class="w-1/4 bg-indigo-800 text-white  disabled:opacity-25 grid">
                             <span class="m-auto text-center">>></span>
                         </button>
                     </div>
+                    <span class="w-full text-[8px] text-center py-4">Note: It Does Not Have To Include The Word Exactly</span>
                 </div>
                 <div x-show="gameState.level_countdown <= 0 && !gameState.accepting_answers && !gameState.accepting_votes && !gameState.showing_results" class="flex flex-col gap-2 m-auto">
                     <h4 class="m-auto w-full text-center text-[64px]/[96px]">New Punny Joke!</h4>

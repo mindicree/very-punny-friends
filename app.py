@@ -50,11 +50,13 @@ game_state = initializeGameState()
 # words
 words = []
 try:
-    with open('words.txt', 'r') as file:
+    with open('categories.txt', 'r') as file:
         for line in file:
+            if line.startswith('--') or len(line.strip()) <= 0:
+                continue
             words.append(line.strip())
 except Exception as e:
-    print('Could not load words.txt file.')
+    print(f'Could not load words.txt file. Error: {e}')
     exit()
 
 @app.route("/")
@@ -96,7 +98,8 @@ def event_create_new_player(json):
     updateGameState(sound=[
         {
             'action': 'play',
-            'name': 'sfxPlayerEntered'
+            'name': 'sfxPlayerEntered',
+            'volume': 0.5,
         }
     ])
     emit('event_new_player_added_successfully', new_player, to=request.sid)
@@ -187,7 +190,7 @@ def event_joke_submission(json):
         },
         
     ])
-    sleep(3)
+    sleep(1)
     setJoke(json['joke'], request.sid)
     setAcceptingVotes(True)
     updateGameState(sound=[
